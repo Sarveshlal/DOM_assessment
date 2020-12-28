@@ -1,82 +1,163 @@
-var table = document.createElement('table')
-table.classList.add('table','table-dark')
-var r1 = document.createElement('tr')
-r1.classList.add('thead-light')
-var d1 = document.createElement('td')
-d1.innerHTML = 'ID';
-var d2 = document.createElement('td')
-d2.innerHTML = 'NAME';
-var d3 = document.createElement('td')
-d3.innerHTML = 'E-MAIL ID';
-r1.append(d1,d2,d3)
-var tbody = document.createElement('tbody')
-tbody.setAttribute('id','datas')
-table.append(r1,tbody)
-document.body.append(table)
-var div1 = document.createElement('div')
-var div2 = document.createElement('div')
-div2.setAttribute('id','pageWrap')
-div1.append(div2)
-document.body.append(div1)
-var request = new XMLHttpRequest();
-request.open('GET','https://raw.githubusercontent.com/Rajavasanthan/jsondata/master/pagenation.json',true);
+//body
+let div = createElement('div');
+setAttribute(div, 'class', 'container');
+append(div);
+
+let table = createElement('table');
+setAttribute(table, 'class', 'table');
+appendChild(div, table);
+
+let thead = createElement('thead');
+appendChild(table, thead);
+
+let tr = createElement('tr');
+appendChild(thead, tr);
+
+let th1 = createElement('th');
+setAttribute(th1, 'scope', 'col');
+th1.innerText = 'S.No';
+appendChild(tr, th1);
+
+let th2 = createElement('th');
+setAttribute(th2, 'scope', 'col');
+th2.innerText = 'Name';
+appendChild(tr, th2);
+
+let th3 = createElement('th');
+setAttribute(th3, 'scope', 'col');
+th3.innerText = 'Email';
+appendChild(tr, th3);
+
+let tbody = createElement('tbody');
+appendChild(table, tbody);
+
+function createElement(element) {
+  return document.createElement(element);
+}
+
+function append(element) {
+  return document.body.append(element);
+}
+
+function appendChild(element, child) {
+  return element.appendChild(child);
+}
+
+function setAttribute(element, attribute, value) {
+  element.setAttribute(attribute, value);
+}
+
+function page() {
+let paginationDiv = createElement('div');
+setAttribute(paginationDiv, 'class', 'd-flex justify-content-center');
+appendChild(div, paginationDiv);
+
+let navBar = createElement('nav');
+setAttribute(navBar, 'aria-label', '...');
+appendChild(paginationDiv, navBar);
+
+let ul = createElement('ul');
+setAttribute(ul, 'class', 'pagination');
+appendChild(navBar, ul);
+
+  //previous button 
+  let prevButton = createElement('li');
+  setAttribute(prevButton, 'class', 'page-item');
+  setAttribute(prevButton, 'id', 'prev');
+  appendChild(ul, prevButton);
+
+  let prevHyperLink = createElement('a');
+  setAttribute(prevHyperLink, 'class', 'page-link');
+  console.log(`startpage: ${startpage}`);
+  setAttribute(prevHyperLink, 'onclick', `prevPage()`);
+
+  prevHyperLink.innerText = 'Previous';
+  appendChild(prevButton, prevHyperLink);
+  appendChild(ul, prevButton);
+  //button
+  for (let i = 0; i < totalPages; i++) {
+    let pageNumBtn = createElement('li');
+    setAttribute(pageNumBtn, 'class', 'page-item');
+    appendChild(ul, pageNumBtn);
+
+    let pageNumLink = createElement('a');
+    setAttribute(pageNumLink, 'class', 'page-link');
+    setAttribute(pageNumLink, 'onclick', `displayPage(${i})`);
+    pageNumLink.innerText = i + 1;
+    appendChild(pageNumBtn, pageNumLink);
+    appendChild(ul, pageNumBtn);
+  }
+
+  //Next button
+  let nextButton = createElement('li');
+  setAttribute(nextButton, 'class', 'page-item');
+  setAttribute(nextButton, 'id', 'next');
+  appendChild(ul, nextButton);
+
+  let nextPagelink = createElement('a');
+  setAttribute(nextPagelink, 'class', 'page-link');
+  setAttribute(nextPagelink, 'onclick', `nextPage()`);
+  nextPagelink.innerText = 'Next';
+  appendChild(nextButton, nextPagelink);
+  appendChild(ul, nextButton);
+}
+//functions of pagination
+let request = new XMLHttpRequest();request.open('GET', 'https://raw.githubusercontent.com/Rajavasanthan/jsondata/master/pagenation.json', true);
 request.send();
-request.onload = function() {
-  var data = JSON.parse(this.response);
-  var state = {
-    'Set': data,
-    'page': 1,
-    'rows': 5,
-    'window': 5,
-  }
-  tabledata(data)
-  function pagination(Set, page, rows) {
-    var start = (page - 1) * rows
-    var end = start + rows
-    var trimmeddata = Set.slice(start, end)
-    var pages = Math.round(Set.length / rows);
-    return {
-      'Set': trimmeddata,
-      'pages': pages,
-    }
-  }
-  function pageButtons(pages) {
-    var paging = document.getElementById('pageWrap')
-    var maxLeft = (state.page - Math.floor(state.window / 2))
-    var maxRight = (state.page + Math.floor(state.window / 2))
-    if (maxLeft < 1) {
-      maxLeft = 1
-      maxRight = state.window
-    }
-    if (maxRight > pages) {
-      maxLeft = pages - (state.window - 1)
-      if (maxLeft < 1) {
-        maxLeft = 1
-      }
-      maxRight = pages
-    }
-    for (var page = maxLeft; page <= maxRight; page++) {
-      paging.innerHTML += `<button value=${page} class="page btn btn-sm btn-info">${page}</button>`
-    }
-    if (state.page != 1) {
-      paging.innerHTML = `<button value=${1} class="page btn btn-sm btn-info">&#171; First</button>` + paging.innerHTML
-    }
-    if (state.page != pages) {
-      paging.innerHTML += `<button value=${pages} class="page btn btn-sm btn-info">Last &#187;</button>`
-    }
-    document.getElementById('page').onclick = 
-  }
-  function tabledata(array){
-    var tablerows = document.getElementById('datas')   
-    var data = pagination(state.Set, state.page, state.rows)
-    var myList = data.Set
-    for(var i in myList)
-    {
-      var row = `<tr><td>${myList[i].id}</td>
-                <td>${myList[i].name}</td>
-                <td>${myList[i].email}</td></tr>`
-      tablerows.innerHTML+=row
-    }   
-    pageButtons(data.Set)
-  }
+let data;
+let tableData;
+let pageNumber = 1;
+let startpage = 0;
+let end = 5;
+let totalPages = 0;
+
+request.onload = function () {
+data = JSON.parse(this.response);
+totalPages = data.length / 5;
+loadTableData();
+page();
+};
+
+function loadTableData() {
+tableData = data.slice(startpage, end);
+console.log(tableData);
+tbody.innerHTML = '';
+for (let i = 0; i < tableData.length; i++) {
+  let dataTr = createElement('tr');
+  let dataTd1 = createElement('td');
+  dataTd1.innerText = tableData[i].id;
+  let dataTd2 = createElement('td');
+  dataTd2.innerText = tableData[i].name;
+  let dataTd3 = createElement('td');
+  dataTd3.innerText = tableData[i].email;
+
+  appendChild(dataTr, dataTd1);
+  appendChild(dataTr, dataTd2);
+  appendChild(dataTr, dataTd3);
+  appendChild(tbody, dataTr);
+}
+}
+
+function displayPage(i) {
+pageNumber = i;
+startpage = pageNumber * 5;
+end = pageNumber * 5 + 5;
+console.log(i);
+loadTableData();
+}
+
+function prevPage() {
+startpage = startpage - 5;
+end = end - 5;
+console.log(startpage, end);
+loadTableData();
+
+}
+
+function nextPage() {
+startpage = startpage + 5;
+end = end + 5;
+console.log(startpage, end);
+loadTableData();
+
 }
